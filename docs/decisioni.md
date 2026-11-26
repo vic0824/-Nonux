@@ -6,7 +6,22 @@ Ogni decisione ha uno stato:
 - **Presa** — confermata; si cambia solo con una nuova voce che la sostituisce.
 
 Le decisioni D-1…D-7 sono già prese nel piano di progetto (§3.1) e non sono
-ripetute qui. Al momento è presa solo D-18; le altre voci sono proposte.
+ripetute qui.
+
+| ID | Argomento | Stato |
+|----|-----------|-------|
+| D-10 | Base: Chimera | proposta |
+| D-11 | libc: musl | proposta |
+| D-12 | Pacchetti: apk | proposta |
+| D-18 | Servizi e default dei pacchetti in `/etc` | presa |
+| D-18b | `dinit-chimera`: spostare ora, convertire in fase 4 | proposta |
+| D-19 | Nessuna cifratura del disco | presa |
+| D-20 | LVM e RAID software sì; zram e kdump no | presa (zram e kdump da confermare) |
+| D-21 | ext4, nessuno snapshot | presa |
+| D-22 | Initramfs | aperta |
+| H-1 | `/tmp` in RAM, `/var/tmp` vietata | presa |
+| H-7 | LLVM in versione unica | obiettivo, decisione rinviata alla fase 1 |
+| H-4, H-5, H-6 | Punti minori del layout | proposte |
 
 Dati di riferimento: [`nota-cports.md`](nota-cports.md) e
 [`prova-fattibilita.md`](prova-fattibilita.md).
@@ -172,14 +187,101 @@ della fase 4 va alzata: non è una conversione meccanica.
 
 ---
 
+## D-19 — Nessuna cifratura del disco
+
+**Stato:** presa (Vittorio, 26 novembre 2026).
+
+**Opzioni:** radice cifrata, solo `/home` cifrata, nessuna cifratura.
+
+**Decisione:** nessuna cifratura.
+
+**Motivazione:** la radice cifrata impone un initramfs che chieda la
+passphrase, e quello di Chimera (`initramfs-tools`, `cryptsetup-scripts`) è
+fatto di script shell. Senza cifratura l'avvio è più semplice e il sistema
+minimo ha meno pacchetti.
+
+**Conseguenze**
+- Chi ha accesso fisico al disco legge tutto, comprese le password Wi-Fi
+  salvate da iwd e le chiavi host di SSH.
+- `cryptsetup` e i relativi servizi di avvio di `dinit-chimera` non entrano nel
+  sistema.
+
+**Quando rivederla:** se la distro viene installata su un portatile.
+
+---
+
+## D-20 — Volumi: LVM e RAID software sì, zram e kdump no
+
+**Stato:** presa per LVM e RAID (Vittorio, 26 novembre 2026). L'esclusione di
+zram e kdump è la raccomandazione proposta, non ancora confermata in modo
+esplicito.
+
+**Decisione:** il sistema supporta LVM e RAID software (`mdadm`). Non supporta
+zram né kdump.
+
+**Conseguenze**
+- Entrano nel sistema `lvm2` e `mdadm` con i loro servizi di avvio. `lvm2` è
+  tra i pacchetti più costosi dell'inventario (51 righe con `usr`).
+- I servizi di avvio corrispondenti di `dinit-chimera` restano e vanno
+  convertiti in fase 4 (D-18b); quelli per cryptsetup, zram e kdump si tolgono.
+- Lo swap, se serve, è una partizione o un volume normale.
+- Se la radice sta su LVM o RAID serve un initramfs: vedi D-22.
+
+---
+
+## D-21 — Filesystem ext4, nessuno snapshot
+
+**Stato:** presa (Vittorio, 26 novembre 2026).
+
+**Opzioni:** ext4 con i due meccanismi di ripristino del piano; btrfs con uno
+snapshot prima di ogni aggiornamento.
+
+**Decisione:** ext4, nessuno snapshot.
+
+**Motivazione:** gli snapshot non sostituiscono git su `/etc` (C-4), quindi i
+meccanismi di ripristino diventerebbero tre; richiedono btrfs e uno strumento
+da scrivere e mantenere.
+
+**Conseguenze**
+- Il ripristino resta quello del piano: rollback di `/etc` con git e avvio di
+  una UKI precedente.
+- Un aggiornamento di pacchetti andato male si annulla reinstallando le
+  versioni precedenti: va tenuta la cache di apk.
+- Con LVM (D-20) restano possibili gli snapshot di volume, come strumento
+  manuale e non come parte della procedura di aggiornamento.
+
+**Quando rivederla:** dopo la fase 7. Passare a btrfs richiede una
+reinstallazione.
+
+---
+
+## D-22 — Initramfs
+
+**Stato:** aperta. Da chiudere entro la fase 2.
+
+Senza cifratura (D-19) il kernel può montare la radice da solo, senza
+initramfs. Con LVM e RAID (D-20) dipende da dove sta la radice:
+
+| Radice su | Initramfs |
+|-----------|-----------|
+| Partizione semplice; LVM e RAID solo per i dati | Non serve: i volumi li attivano i servizi dinit dopo l'avvio |
+| Volume LVM | Serve: il kernel non sa attivare LVM da solo |
+| RAID software | Serve, salvo configurazioni particolari del kernel |
+
+**Raccomandazione:** radice su partizione semplice, LVM e RAID per `/home`,
+`/var` e i dati, nessun initramfs.
+
+---
+
 ## Punti minori del layout
 
-Proposte per i punti aperti di `hier.md` non coperti sopra.
+Punti aperti di `hier.md` non coperti sopra. Dove non è indicato "presa" o
+"obiettivo", sono proposte.
 
 | Punto | Decisione proposta | Motivazione |
 |-------|--------------------|-------------|
-| H-1 `/var/tmp` | Ammessa | `/tmp` è tmpfs: i temporanei grandi o che devono sopravvivere al riavvio non hanno altro posto. |
-| H-4 sysroot cross | `/lib/cross/<tripletta>` | Rientra nella regola `/lib/<pacchetto>/`; esiste solo sulle macchine di build. Non urgente: x86_64 è l'unica architettura. |
+| H-1 cartelle temporanee | **Presa:** `/tmp` in RAM, `/var/tmp` vietata | Una sola cartella, niente da pulire. I programmi con temporanei grandi usano `TMPDIR`; quelli con `/var/tmp` nel codice vanno corretti. |
+| H-4 sysroot cross | Non impacchettare i cross-compilatori | Il piano prevede solo x86_64: senza quei pacchetti la domanda non si pone. |
 | H-5 home dei servizi | `/var/lib/<servizio>` | È già "stato dei servizi" secondo `hier.md`. |
 | H-6 licenze | `/share/licenses/<pacchetto>` | Come Chimera, senza `/usr`. |
-| H-7 versioni affiancate (LLVM) | `/lib/llvm<N>/` con `bin/`, `lib/`, `include/` interni | Rientra in `/lib/<pacchetto>/`. Eccezione a L-1 da documentare: dentro ci sono altri `bin` e `lib`. |
+| H-7 LLVM | **Obiettivo:** una sola versione, installata direttamente in `/bin` e `/lib`. Decisione rinviata alla fase 1 | Evita l'eccezione a L-1. Se il costo sul template di `llvm` è troppo alto, si ripiega su `/lib/llvm<N>/` come eccezione documentata. `llvm-bootstrap` resta in una cartella propria, solo sulle macchine di build. |

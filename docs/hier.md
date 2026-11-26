@@ -53,9 +53,11 @@ installati dai pacchetti (binari, script, file di dati).
 | `/srv` | `/var/lib/<servizio>` |
 | `/var/run` | `/run` |
 | `/var/lock` | `/run/lock` |
+| `/var/tmp` | `/tmp` |
 
-`/var/run` e `/var/lock` non sono nel piano originale: li aggiungo perché sono
-i due symlink di compatibilità più diffusi e ricadono nella regola L-3.
+`/var/run` e `/var/lock` non sono nel piano originale: sono i due symlink di
+compatibilità più diffusi e ricadono nella regola L-3. `/var/tmp` è vietata
+perché la cartella temporanea è una sola (punto H-1).
 
 ## Variabili dei sistemi di build
 
@@ -113,10 +115,10 @@ Le decisioni proposte, con motivazione, sono in [`decisioni.md`](decisioni.md).
 
 | # | Domanda | Proposta |
 |---|---------|----------|
-| H-1 | `/var/tmp` (temporanei che sopravvivono al riavvio) | Ammetterla: `/tmp` è tmpfs e non regge file grandi; molti programmi la usano per questo. |
+| H-1 | `/var/tmp` (temporanei che sopravvivono al riavvio) | **Chiuso:** vietata; `/tmp` resta l'unica cartella temporanea, in RAM. |
 | H-2 | Servizi dinit forniti dai pacchetti | **Chiuso (D-18):** tutto in `/etc/dinit.d`. |
 | H-3 | Default di `sysctl`, `modprobe`, `tmpfiles`, `sysusers` che Chimera mette in `/usr/lib/*.d` | **Chiuso (D-18):** tutto in `/etc/<cartella>`. |
-| H-4 | Sysroot dei cross-compilatori (`/usr/<tripletta>` in cports) | `/lib/cross/<tripletta>`; esiste solo sulle macchine di build. |
+| H-4 | Sysroot dei cross-compilatori (`/usr/<tripletta>` in cports) | Non impacchettare i cross-compilatori (solo x86_64). |
 | H-5 | Home degli utenti di servizio | `/var/lib/<servizio>`. |
 | H-6 | Licenze dei pacchetti | `/share/licenses/<pacchetto>`, come in Chimera senza `/usr`. |
-| H-7 | Installazioni affiancate di più versioni (es. LLVM in `/usr/lib/llvm23`) | `/lib/llvm<N>/` con i suoi `bin/`, `lib/`, `include/` interni: rientra nella regola `/lib/<pacchetto>/`. |
+| H-7 | Installazioni affiancate di più versioni (es. LLVM in `/usr/lib/llvm23`) | Obiettivo: una sola versione di LLVM, direttamente in `/bin` e `/lib`. Decisione in fase 1; ripiego: `/lib/llvm<N>/`. |

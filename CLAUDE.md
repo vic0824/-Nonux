@@ -15,7 +15,7 @@ La specifica normativa è `docs/hier.md` (forma leggibile dagli strumenti:
   `sysctl.d`, `modprobe.d`, `modules-load.d`, `binfmt.d`) solo in `/etc`: mai
   una cartella di default in `/lib` con override in `/etc` (D-18).
 - Vietati: `/usr`, `/usr/local`, `/sbin`, `/lib64`, `/lib32`, `/libexec`,
-  `/opt`, `/media`, `/srv`, `/var/run`, `/var/lock`.
+  `/opt`, `/media`, `/srv`, `/var/run`, `/var/lock`, `/var/tmp`.
 - **Mai aggiungere symlink di compatibilità** verso i percorsi vietati, nemmeno
   come soluzione temporanea. Se un programma li richiede, si corregge il
   programma.

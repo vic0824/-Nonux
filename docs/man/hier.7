@@ -93,6 +93,7 @@ Code di lavoro.
 Dati runtime, su tmpfs.
 .It Pa /tmp
 File temporanei, su tmpfs.
+È l'unica cartella temporanea del sistema.
 .It Pa /home
 Home degli utenti.
 Dentro le home vale la specifica XDG.
@@ -124,6 +125,7 @@ comparire nei file installati dai pacchetti:
 .It Pa /srv Ta Pa /var/lib/<servizio>
 .It Pa /var/run Ta Pa /run
 .It Pa /var/lock Ta Pa /run/lock
+.It Pa /var/tmp Ta Pa /tmp
 .El
 .Sh COMPATIBILITY
 Il software distribuito in forma binaria per il Filesystem Hierarchy Standard
