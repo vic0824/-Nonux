@@ -10,8 +10,8 @@ Avanzamento:
 - Step 2 (repository): fatto — `CLAUDE.md`, cports come submodule
   (`vic0824/cports`, branch `nonux`, fermo al commit upstream `f4aac13`).
 - Step 5 (prova di fattibilità): fatto, esito positivo — `prova-fattibilita.md`.
-- Step 4 (decisioni): prese D-18, D-19, D-20, D-21 e H-1; aperta D-22
-  (initramfs); D-10, D-11, D-12 e D-18b sono ancora proposte. Lo stato di
+- Step 4 (decisioni): prese D-10, D-11, D-12, D-18, D-19, D-20, D-21, D-22 e
+  H-1. Restano proposte D-18b e i punti minori H-4, H-5, H-6. Lo stato di
   ognuna è nella tabella in testa a `decisioni.md`.
 - Step 6, 7, 8: da fare.
 

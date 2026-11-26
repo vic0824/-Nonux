@@ -26,7 +26,7 @@ in [`hier.toml`](hier.toml) e come pagina man in [`man/hier.7`](man/hier.7).
 | `/tmp` | File temporanei | tmpfs |
 | `/home` | Home degli utenti | Dentro le home vale XDG (`~/.local/bin` ecc.) |
 | `/root` | Home di root | |
-| `/boot` | Kernel, initramfs, ESP | |
+| `/boot` | Kernel (UKI), ESP | Nessun initramfs (D-22) |
 | `/mnt` | Unico punto per i mount manuali e automatici | |
 | `/dev` | Filesystem virtuale del kernel | Non modificabile |
 | `/proc` | Filesystem virtuale del kernel | Non modificabile |

@@ -55,7 +55,7 @@ content = "Home di root"
 
 [[dir]]
 path = "/boot"
-content = "Kernel, initramfs, ESP"
+content = "Kernel (UKI), ESP"
 
 [[dir]]
 path = "/mnt"

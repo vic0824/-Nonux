@@ -10,15 +10,15 @@ ripetute qui.
 
 | ID | Argomento | Stato |
 |----|-----------|-------|
-| D-10 | Base: Chimera | proposta |
-| D-11 | libc: musl | proposta |
-| D-12 | Pacchetti: apk | proposta |
+| D-10 | Base: Chimera | presa |
+| D-11 | libc: musl | presa |
+| D-12 | Pacchetti: apk, con l'elenco dei pacchetti in `/etc/apk/world` | presa |
 | D-18 | Servizi e default dei pacchetti in `/etc` | presa |
 | D-18b | `dinit-chimera`: spostare ora, convertire in fase 4 | proposta |
 | D-19 | Nessuna cifratura del disco | presa |
-| D-20 | LVM e RAID software sì; zram e kdump no | presa (zram e kdump da confermare) |
+| D-20 | LVM e RAID software sì; zram e kdump no | presa |
 | D-21 | ext4, nessuno snapshot | presa |
-| D-22 | Initramfs | aperta |
+| D-22 | Nessun initramfs, radice su partizione semplice | presa |
 | H-1 | `/tmp` in RAM, `/var/tmp` vietata | presa |
 | H-7 | LLVM in versione unica | obiettivo, decisione rinviata alla fase 1 |
 | H-4, H-5, H-6 | Punti minori del layout | proposte |
@@ -30,7 +30,7 @@ Dati di riferimento: [`nota-cports.md`](nota-cports.md) e
 
 ## D-10 — Base da biforcare: Chimera
 
-**Stato:** proposta. **Data:** 26 novembre 2026.
+**Stato:** presa (Vittorio, 26 novembre 2026).
 
 **Opzioni:** Chimera, Oasis, da zero (stile LFS).
 
@@ -61,7 +61,7 @@ dell'ambiente di build (nota tecnica, §7) non si chiude.
 
 ## D-11 — libc: musl
 
-**Stato:** proposta. **Data:** 26 novembre 2026.
+**Stato:** presa (Vittorio, 26 novembre 2026).
 
 **Opzioni:** musl, glibc.
 
@@ -84,11 +84,14 @@ per glibc.
 
 ## D-12 — Gestore pacchetti: apk
 
-**Stato:** proposta. **Data:** 26 novembre 2026.
+**Stato:** presa (Vittorio, 26 novembre 2026).
 
 **Opzioni:** apk (apk-tools 3), soluzione dichiarativa in stile Oasis.
 
-**Decisione:** apk.
+**Decisione:** apk, usato in modo dichiarativo: l'elenco dei pacchetti
+richiesti è il file `/etc/apk/world`, che sta sotto git con il resto di
+`/etc`. Installare o rimuovere un pacchetto equivale a modificare quel file e
+far riallineare il sistema.
 
 **Motivazione**
 - Nel codice non ha `/usr`: usa `lib/apk`, `etc/apk`, `var/cache/apk`.
@@ -212,9 +215,7 @@ minimo ha meno pacchetti.
 
 ## D-20 — Volumi: LVM e RAID software sì, zram e kdump no
 
-**Stato:** presa per LVM e RAID (Vittorio, 26 novembre 2026). L'esclusione di
-zram e kdump è la raccomandazione proposta, non ancora confermata in modo
-esplicito.
+**Stato:** presa (Vittorio, 26 novembre 2026).
 
 **Decisione:** il sistema supporta LVM e RAID software (`mdadm`). Non supporta
 zram né kdump.
@@ -225,7 +226,7 @@ zram né kdump.
 - I servizi di avvio corrispondenti di `dinit-chimera` restano e vanno
   convertiti in fase 4 (D-18b); quelli per cryptsetup, zram e kdump si tolgono.
 - Lo swap, se serve, è una partizione o un volume normale.
-- Se la radice sta su LVM o RAID serve un initramfs: vedi D-22.
+- LVM e RAID si usano per `/home`, `/var` e i dati, non per la radice: vedi D-22.
 
 ---
 
@@ -255,21 +256,37 @@ reinstallazione.
 
 ---
 
-## D-22 — Initramfs
+## D-22 — Nessun initramfs, radice su partizione semplice
 
-**Stato:** aperta. Da chiudere entro la fase 2.
+**Stato:** presa (Vittorio, 26 novembre 2026).
 
-Senza cifratura (D-19) il kernel può montare la radice da solo, senza
-initramfs. Con LVM e RAID (D-20) dipende da dove sta la radice:
+**Opzioni:** radice su partizione semplice senza initramfs; radice su LVM o
+RAID con initramfs.
 
-| Radice su | Initramfs |
-|-----------|-----------|
-| Partizione semplice; LVM e RAID solo per i dati | Non serve: i volumi li attivano i servizi dinit dopo l'avvio |
-| Volume LVM | Serve: il kernel non sa attivare LVM da solo |
-| RAID software | Serve, salvo configurazioni particolari del kernel |
+**Decisione:** la radice sta su una partizione semplice (ext4, D-21) e il
+kernel la monta da solo. Non esiste un initramfs. LVM e RAID (D-20) vengono
+attivati dai servizi dinit dopo l'avvio e si usano per `/home`, `/var` e i
+dati.
 
-**Raccomandazione:** radice su partizione semplice, LVM e RAID per `/home`,
-`/var` e i dati, nessun initramfs.
+**Motivazione:** senza cifratura (D-19) niente obbliga ad avere un initramfs,
+e quello di Chimera è fatto di script shell (`initramfs-tools`, 57 righe con
+`usr` nell'inventario), contro A-1. Toglierlo elimina un pacchetto, un
+generatore e un passaggio dell'avvio.
+
+**Conseguenze**
+- I driver del disco e del filesystem della radice vanno compilati dentro il
+  kernel, non come moduli: serve un kernel configurato per la macchina.
+- Il microcodice della CPU va incluso nel kernel, che va ricompilato a ogni
+  aggiornamento del microcodice.
+- La UKI (D-16) contiene solo kernel e riga di comando, con la radice indicata
+  per `PARTUUID`.
+- La radice non può essere ridimensionata con LVM né avere ridondanza RAID.
+- `/var` su un volume separato deve essere montata presto: i servizi che
+  scrivono log o stato dipendono dal suo mount.
+- I pacchetti `initramfs-tools` e gli hook `install_initramfs` dei template
+  non si usano.
+
+**Quando rivederla:** se serve la radice cifrata o ridondante.
 
 ---
 
