@@ -9,7 +9,7 @@ nessun file sotto `usr/`. Senza la nuova opzione cbuild si comporta come prima.
 ## Cosa è stato fatto
 
 Modifica sul branch `nonux` del fork di cports, commit `e24d6d6`:
-11 file, 108 righe aggiunte e 41 tolte, più un modulo nuovo di 80 righe.
+11 file, 177 righe aggiunte e 40 tolte; 78 delle righe aggiunte sono un modulo nuovo.
 
 - **`src/cbuild/core/layout.py`** (nuovo): unico punto in cui è definito il
   prefisso. Si sceglie con la variabile d'ambiente `CBUILD_TARGET_PREFIX`
@@ -28,11 +28,11 @@ Modifica sul branch `nonux` del fork di cports, commit `e24d6d6`:
 
 Ambiente: bldroot Chimera standard (`cbuild binary-bootstrap`), x86_64.
 
-| Pacchetto | Sistema di build | Esito | Sottopacchetti |
+| Pacchetto | Sistema di build | Esito | Pacchetti `.apk` prodotti |
 |-----------|------------------|-------|----------------|
 | `pkgconf` 2.4.3 | autotools | passa | 8 |
-| `serd` 0.32.10 | Meson | passa | 7 |
-| `cmocka` 1.1.8 | CMake | passa | 3 (uno è `-dbg`, non contato sotto) |
+| `serd` 0.32.10 | Meson | passa | 8 |
+| `cmocka` 1.1.8 | CMake | passa | 3 |
 
 Verifiche:
 
