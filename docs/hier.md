@@ -109,6 +109,7 @@ Punti da verificare in fase 1 (prefisso `/`):
 ## Punti aperti
 
 Casi che la §2 del piano non copre. Non sono ancora in `hier.toml`.
+Le decisioni proposte, con motivazione, sono in [`decisioni.md`](decisioni.md).
 
 | # | Domanda | Proposta |
 |---|---------|----------|
