@@ -33,10 +33,13 @@ Se si cambia il layout, vanno aggiornati insieme `hier.md`, `hier.toml` e
   documentata (D-18b). `dinit-chimera` non si modifica.
 - `tools/usr-inventory/` — inventario dei riferimenti a `/usr` in cports.
 - `tools/tests/` — test della specifica.
+- `image/check-host.sh` — verifica i requisiti della macchina di sviluppo.
+- `.github/workflows/ci.yml` — CI: lint, test, pagina man, inventario.
 
 Le cartelle previste dal piano e non ancora create (`tools/path-audit/`,
-`tools/shebang-fix/`, `etc-template/`, `image/`, `ci/`) si
-aggiungono quando hanno un contenuto.
+`tools/shebang-fix/`, `etc-template/`) si aggiungono quando hanno un
+contenuto. La CI sta in `.github/workflows/` invece che in `ci/`, perché è
+lì che GitHub Actions la cerca.
 
 ## Comandi
 
@@ -64,4 +67,6 @@ cd cports && CBUILD_TARGET_PREFIX=/ ./cbuild -r packages-nonux pkg main/<nome>
   che spiega perché serve e se è proponibile upstream.
 - Modifiche a cports: piccole e separate dai cambi di versione, per ridurre i
   conflitti a ogni sincronizzazione con Chimera.
-- `docs/nota-cports-cbuild.md` è generato: si rigenera, non si modifica a mano.
+- `docs/nota-cports-cbuild.md` è generato e fotografa cports upstream al
+  commit `f4aac13`, prima delle nostre modifiche: non si modifica a mano. I
+  numeri aggiornati sul submodule li pubblica la CI.

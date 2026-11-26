@@ -10,12 +10,14 @@ Avanzamento:
 - Step 2 (repository): fatto — `CLAUDE.md`, cports come submodule
   (`vic0824/cports`, branch `nonux`, fermo al commit upstream `f4aac13`).
 - Step 5 (prova di fattibilità): fatto, esito positivo — `prova-fattibilita.md`.
-- Step 4 (decisioni): prese D-10, D-11, D-12, D-18, D-18b, D-19, D-20, D-21,
-  D-22 e H-1. Restano proposti i punti minori H-4, H-5, H-6. Lo stato di
+- Step 4 (decisioni): fatto. Resta rinviata alla fase 1 solo H-7. Lo stato di
   ognuna è nella tabella in testa a `decisioni.md`.
 - Effetto sulle fasi successive: i servizi di avvio si scrivono in fase 2
   (D-18b) e la fase 4 si riduce di conseguenza; non esiste un initramfs (D-22).
-- Step 6, 7, 8: da fare.
+- Step 6 (ambiente): scritto `image/check-host.sh`; da eseguire sulla macchina
+  personale.
+- Step 7 (CI): fatto — `.github/workflows/ci.yml`.
+- Step 8 (chiusura): fatto, esito go — `fase-0-chiusura.md`.
 
 Obiettivo della fase: avere una specifica del layout scritta, le decisioni
 D-10/D-11/D-12 chiuse con motivazione, una mappa precisa dei punti in cui

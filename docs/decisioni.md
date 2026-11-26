@@ -21,7 +21,9 @@ ripetute qui.
 | D-22 | Nessun initramfs, radice su partizione semplice | presa |
 | H-1 | `/tmp` in RAM, `/var/tmp` vietata | presa |
 | H-7 | LLVM in versione unica | obiettivo, decisione rinviata alla fase 1 |
-| H-4, H-5, H-6 | Punti minori del layout | proposte |
+| H-4 | Cross-compilatori non impacchettati | presa |
+| H-5 | Home dei servizi in `/var/lib/<servizio>` | presa |
+| H-6 | Licenze in `/share/licenses/<pacchetto>` | presa |
 
 Dati di riferimento: [`nota-cports.md`](nota-cports.md) e
 [`prova-fattibilita.md`](prova-fattibilita.md).
@@ -327,13 +329,13 @@ generatore e un passaggio dell'avvio.
 
 ## Punti minori del layout
 
-Punti aperti di `hier.md` non coperti sopra. Dove non è indicato "presa" o
-"obiettivo", sono proposte.
+Punti di `hier.md` non coperti sopra. Tutti confermati da Vittorio il 26
+novembre 2026, tranne H-7 che è un obiettivo con decisione rinviata.
 
-| Punto | Decisione proposta | Motivazione |
+| Punto | Decisione | Motivazione |
 |-------|--------------------|-------------|
 | H-1 cartelle temporanee | **Presa:** `/tmp` in RAM, `/var/tmp` vietata | Una sola cartella, niente da pulire. I programmi con temporanei grandi usano `TMPDIR`; quelli con `/var/tmp` nel codice vanno corretti. |
-| H-4 sysroot cross | Non impacchettare i cross-compilatori | Il piano prevede solo x86_64: senza quei pacchetti la domanda non si pone. |
-| H-5 home dei servizi | `/var/lib/<servizio>` | È già "stato dei servizi" secondo `hier.md`. |
-| H-6 licenze | `/share/licenses/<pacchetto>` | Come Chimera, senza `/usr`. |
+| H-4 sysroot cross | **Presa:** non impacchettare i cross-compilatori | Il piano prevede solo x86_64: senza quei pacchetti la domanda non si pone. |
+| H-5 home dei servizi | **Presa:** `/var/lib/<servizio>` | È già "stato dei servizi" secondo `hier.md`. |
+| H-6 licenze | **Presa:** `/share/licenses/<pacchetto>` | Come Chimera, senza `/usr`. |
 | H-7 LLVM | **Obiettivo:** una sola versione, installata direttamente in `/bin` e `/lib`. Decisione rinviata alla fase 1 | Evita l'eccezione a L-1. Se il costo sul template di `llvm` è troppo alto, si ripiega su `/lib/llvm<N>/` come eccezione documentata. `llvm-bootstrap` resta in una cartella propria, solo sulle macchine di build. |

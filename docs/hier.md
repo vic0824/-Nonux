@@ -108,17 +108,17 @@ Punti da verificare in fase 1 (prefisso `/`):
 | `/sbin/modprobe`, `/sbin/hotplug` | Percorsi predefiniti di `kernel.modprobe` e dell'helper uevent: da impostare a `/bin/modprobe` con `CONFIG_MODPROBE_PATH` (o sysctl) e da disattivare l'helper uevent. |
 | `/sbin/poweroff`, `/sbin/reboot` | Predefiniti di `kernel.poweroff_cmd`: da impostare via sysctl. |
 
-## Punti aperti
+## Casi particolari
 
-Casi che la §2 del piano non copre. Non sono ancora in `hier.toml`.
-Le decisioni proposte, con motivazione, sono in [`decisioni.md`](decisioni.md).
+Casi che la §2 del piano non copriva. Le decisioni, con motivazione, sono in
+[`decisioni.md`](decisioni.md). Resta aperto solo H-7.
 
-| # | Domanda | Proposta |
+| # | Domanda | Decisione |
 |---|---------|----------|
 | H-1 | `/var/tmp` (temporanei che sopravvivono al riavvio) | **Chiuso:** vietata; `/tmp` resta l'unica cartella temporanea, in RAM. |
 | H-2 | Servizi dinit forniti dai pacchetti | **Chiuso (D-18):** tutto in `/etc/dinit.d`. |
 | H-3 | Default di `sysctl`, `modprobe`, `tmpfiles`, `sysusers` che Chimera mette in `/usr/lib/*.d` | **Chiuso (D-18):** tutto in `/etc/<cartella>`. |
-| H-4 | Sysroot dei cross-compilatori (`/usr/<tripletta>` in cports) | Non impacchettare i cross-compilatori (solo x86_64). |
-| H-5 | Home degli utenti di servizio | `/var/lib/<servizio>`. |
-| H-6 | Licenze dei pacchetti | `/share/licenses/<pacchetto>`, come in Chimera senza `/usr`. |
-| H-7 | Installazioni affiancate di più versioni (es. LLVM in `/usr/lib/llvm23`) | Obiettivo: una sola versione di LLVM, direttamente in `/bin` e `/lib`. Decisione in fase 1; ripiego: `/lib/llvm<N>/`. |
+| H-4 | Sysroot dei cross-compilatori (`/usr/<tripletta>` in cports) | **Chiuso:** i cross-compilatori non si impacchettano (solo x86_64). |
+| H-5 | Home degli utenti di servizio | **Chiuso:** `/var/lib/<servizio>`. |
+| H-6 | Licenze dei pacchetti | **Chiuso:** `/share/licenses/<pacchetto>`. |
+| H-7 | Installazioni affiancate di più versioni (es. LLVM in `/usr/lib/llvm23`) | **Aperto.** Obiettivo: una sola versione di LLVM, direttamente in `/bin` e `/lib`. Decisione in fase 1; ripiego: `/lib/llvm<N>/`. |

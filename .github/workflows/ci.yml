@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verifiche:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Strumenti
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq mandoc
+          pip install -q pytest ruff
+
+      - name: Lint
+        run: ruff check tools
+
+      - name: Test
+        run: python3 -m pytest -q tools
+
+      - name: Pagina man
+        run: mandoc -Tlint -Wwarning docs/man/hier.7
+
+      - name: Script di shell
+        run: sh -n image/check-host.sh
+
+      - name: Inventario di /usr in cports
+        run: |
+          mkdir -p inventario
+          tools/usr-inventory/usr_inventory.py cports \
+            --csv inventario/inventario.csv \
+            --md inventario/riepilogo.md \
+            --core-md inventario/cbuild.md \
+            --packages tools/usr-inventory/minimal.txt
+          cat inventario/riepilogo.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: inventario-usr
+          path: inventario/
