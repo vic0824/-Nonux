@@ -1,2 +1,2 @@
-# -Nonux
+# Nonux
 No-nonsense Linux
