@@ -1,0 +1,143 @@
+.Dd November 26, 2026
+.Dt HIER 7
+.Os Nonux
+.Sh NAME
+.Nm hier
+.Nd layout del filesystem
+.Sh DESCRIPTION
+Nonux usa una sola cartella per ogni tipo di file.
+Non esistono
+.Pa /usr ,
+.Pa /sbin ,
+.Pa /usr/local
+né
+.Pa /opt ,
+e non esistono symlink di compatibilità verso quei percorsi.
+Il prefisso di installazione di tutti i pacchetti è
+.Pa / .
+.Pp
+Le cartelle ammesse nella radice sono:
+.Bl -tag -width "/include"
+.It Pa /bin
+Tutti gli eseguibili destinati al
+.Ev PATH ,
+di sistema e utente.
+Non contiene sottocartelle.
+.It Pa /lib
+Librerie condivise e statiche, loader dinamico e file
+.Xr pkg-config 1 .
+.Bl -tag -width "firmware/" -compact
+.It Pa modules/
+Moduli del kernel.
+.It Pa firmware/
+Firmware dei dispositivi.
+.It Pa pkgconfig/
+File
+.Pa .pc
+dipendenti dall'architettura.
+.It Pa <pacchetto>/
+Eseguibili interni di un pacchetto, non destinati al
+.Ev PATH .
+.El
+.It Pa /include
+Header C e C++.
+.It Pa /share
+Dati indipendenti dall'architettura.
+.Bl -tag -width "firmware/" -compact
+.It Pa man/
+Pagine di manuale.
+.It Pa locale/
+Traduzioni.
+.It Pa licenses/
+Licenze dei pacchetti.
+.It Pa pkgconfig/
+File
+.Pa .pc
+indipendenti dall'architettura.
+.El
+.It Pa /etc
+Configurazioni, un file o una cartella per servizio.
+La cartella è un repository
+.Xr git 1 .
+.Bl -tag -width "firmware/" -compact
+.It Pa dinit.d/
+Servizi, sia dei pacchetti sia dell'amministratore.
+.El
+.Pp
+Non esistono cartelle di valori predefiniti in
+.Pa /lib :
+anche i file
+.Pa tmpfiles.d ,
+.Pa sysusers.d ,
+.Pa sysctl.d ,
+.Pa modprobe.d ,
+.Pa modules-load.d
+e
+.Pa binfmt.d
+dei pacchetti stanno in
+.Pa /etc .
+.It Pa /var
+Dati variabili persistenti.
+.Bl -tag -width "firmware/" -compact
+.It Pa log/
+Log, in
+.Pa log/<servizio>/ .
+.It Pa cache/
+Dati rigenerabili.
+.It Pa lib/
+Stato dei servizi.
+.It Pa spool/
+Code di lavoro.
+.El
+.It Pa /run
+Dati runtime, su tmpfs.
+.It Pa /tmp
+File temporanei, su tmpfs.
+È l'unica cartella temporanea del sistema.
+.It Pa /home
+Home degli utenti.
+Dentro le home vale la specifica XDG.
+.It Pa /root
+Home di root.
+.It Pa /boot
+Kernel e partizione di sistema EFI.
+Il sistema non usa un initramfs.
+.It Pa /mnt
+Unico punto per i mount manuali e automatici.
+.It Pa /dev , /proc , /sys
+Filesystem virtuali del kernel.
+.It Pa /src
+Sorgenti, incluso il kernel.
+Opzionale.
+.El
+.Sh PERCORSI VIETATI
+I percorsi seguenti non devono esistere, nemmeno come symlink, e non devono
+comparire nei file installati dai pacchetti:
+.Bl -column "/usr/local" "/var/lib/<servizio>"
+.It Sy Percorso Ta Sy Al suo posto
+.It Pa /usr Ta Pa /
+.It Pa /usr/local Ta Pa /
+.It Pa /sbin Ta Pa /bin
+.It Pa /lib64 Ta Pa /lib
+.It Pa /lib32 Ta Pa /lib
+.It Pa /libexec Ta Pa /lib/<pacchetto>
+.It Pa /opt Ta Pa /
+.It Pa /media Ta Pa /mnt
+.It Pa /srv Ta Pa /var/lib/<servizio>
+.It Pa /var/run Ta Pa /run
+.It Pa /var/lock Ta Pa /run/lock
+.It Pa /var/tmp Ta Pa /tmp
+.El
+.Sh COMPATIBILITY
+Il software distribuito in forma binaria per il Filesystem Hierarchy Standard
+non funziona senza modifiche.
+Gli script che iniziano con
+.Ql #!/usr/bin/env
+vanno corretti in
+.Ql #!/bin/env .
+.Sh SEE ALSO
+.Xr apk 8 ,
+.Xr dinit 8
+.Sh HISTORY
+Il layout deriva da quello di Chimera Linux, da cui rimuove la gerarchia
+.Pa /usr .
