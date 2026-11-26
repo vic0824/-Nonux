@@ -7,7 +7,9 @@ Avanzamento:
 - Step 1 (specifica del layout): fatto — `hier.md`, `hier.toml`, `man/hier.7`.
   Restano i punti aperti H-1…H-7 elencati in `hier.md`.
 - Step 3 (nota tecnica): prima versione in `nota-cports.md`.
-- Step 2: in attesa del fork di cports. Step 4–8: da fare.
+- Step 2 (repository): fatto — `CLAUDE.md`, cports come submodule
+  (`vic0824/cports`, branch `nonux`, fermo al commit upstream `f4aac13`).
+- Step 4–8: da fare.
 
 Obiettivo della fase: avere una specifica del layout scritta, le decisioni
 D-10/D-11/D-12 chiuse con motivazione, una mappa precisa dei punti in cui
