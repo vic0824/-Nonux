@@ -1,0 +1,148 @@
+# Layout del filesystem di Nonux, in forma leggibile dagli strumenti.
+# Fonte normativa: docs/hier.md. I due file devono restare allineati
+# (lo verifica tools/tests/test_hier.py).
+
+version = 1
+
+# Cartelle ammesse nella radice.
+[[dir]]
+path = "/bin"
+content = "Tutti gli eseguibili destinati al PATH"
+vars = ["bindir", "sbindir"]
+subdirs = false
+
+[[dir]]
+path = "/lib"
+content = "Librerie condivise e statiche, loader dinamico, moduli kernel, firmware, pkgconfig, eseguibili interni in /lib/<pacchetto>/"
+vars = ["libdir", "libexecdir"]
+
+[[dir]]
+path = "/include"
+content = "Header C/C++"
+vars = ["includedir"]
+
+[[dir]]
+path = "/share"
+content = "Dati indipendenti dall'architettura: man, locale, icone, font, dati dei pacchetti"
+vars = ["datarootdir", "datadir", "mandir", "infodir", "localedir", "docdir"]
+
+[[dir]]
+path = "/etc"
+content = "Configurazioni (sotto git)"
+vars = ["sysconfdir"]
+
+[[dir]]
+path = "/var"
+content = "Dati variabili persistenti: log/, cache/, lib/, spool/"
+vars = ["localstatedir", "sharedstatedir"]
+
+[[dir]]
+path = "/run"
+content = "Dati runtime (tmpfs)"
+vars = ["runstatedir"]
+
+[[dir]]
+path = "/tmp"
+content = "File temporanei (tmpfs)"
+
+[[dir]]
+path = "/home"
+content = "Home degli utenti (dentro vale XDG)"
+
+[[dir]]
+path = "/root"
+content = "Home di root"
+
+[[dir]]
+path = "/boot"
+content = "Kernel, initramfs, ESP"
+
+[[dir]]
+path = "/mnt"
+content = "Unico punto per i mount manuali e automatici"
+
+[[dir]]
+path = "/dev"
+content = "Filesystem virtuale del kernel"
+virtual = true
+
+[[dir]]
+path = "/proc"
+content = "Filesystem virtuale del kernel"
+virtual = true
+
+[[dir]]
+path = "/sys"
+content = "Filesystem virtuale del kernel"
+virtual = true
+
+[[dir]]
+path = "/src"
+content = "Sorgenti, incluso il kernel"
+optional = true
+
+# Valori delle variabili di installazione per i sistemi di build.
+[build]
+prefix = "/"
+bindir = "/bin"
+sbindir = "/bin"
+libdir = "/lib"
+libexecdir = "/lib"
+includedir = "/include"
+datarootdir = "/share"
+datadir = "/share"
+mandir = "/share/man"
+infodir = "/share/info"
+localedir = "/share/locale"
+docdir = "/share/doc"
+sysconfdir = "/etc"
+localstatedir = "/var"
+sharedstatedir = "/var/lib"
+runstatedir = "/run"
+pkgconfigdirs = ["/lib/pkgconfig", "/share/pkgconfig"]
+
+# Percorsi vietati: non devono esistere, nemmeno come symlink, e non devono
+# comparire in file installati. `use` indica dove vanno i contenuti.
+[[forbidden]]
+path = "/usr"
+use = "/"
+
+[[forbidden]]
+path = "/usr/local"
+use = "/"
+
+[[forbidden]]
+path = "/sbin"
+use = "/bin"
+
+[[forbidden]]
+path = "/lib64"
+use = "/lib"
+
+[[forbidden]]
+path = "/lib32"
+use = "/lib"
+
+[[forbidden]]
+path = "/libexec"
+use = "/lib/<pacchetto>"
+
+[[forbidden]]
+path = "/opt"
+use = "/"
+
+[[forbidden]]
+path = "/media"
+use = "/mnt"
+
+[[forbidden]]
+path = "/srv"
+use = "/var/lib/<servizio>"
+
+[[forbidden]]
+path = "/var/run"
+use = "/run"
+
+[[forbidden]]
+path = "/var/lock"
+use = "/run/lock"

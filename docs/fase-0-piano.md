@@ -3,6 +3,12 @@
 Riferimento: *Piano di progetto*, §4 Fase 0 e §8 "Prossimi passi".
 Stato: bozza, 26 novembre 2026.
 
+Avanzamento:
+- Step 1 (specifica del layout): fatto — `hier.md`, `hier.toml`, `man/hier.7`.
+  Restano i punti aperti H-1…H-7 elencati in `hier.md`.
+- Step 3 (nota tecnica): prima versione in `nota-cports.md`.
+- Step 2: in attesa del fork di cports. Step 4–8: da fare.
+
 Obiettivo della fase: avere una specifica del layout scritta, le decisioni
 D-10/D-11/D-12 chiuse con motivazione, una mappa precisa dei punti in cui
 cports assume `/usr`, e un repository pronto per le fasi successive.
