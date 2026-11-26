@@ -2,7 +2,6 @@
 
 import pathlib
 import re
-
 import tomllib
 
 DOCS = pathlib.Path(__file__).resolve().parents[2] / "docs"
