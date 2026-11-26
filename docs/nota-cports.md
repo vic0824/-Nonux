@@ -234,8 +234,10 @@ parla di "convertire i servizi" come lavoro meccanico. Le strade:
 3. **Riscrivere l'avvio** con un set minimo di servizi propri. Costo alto, ma
    è l'unica strada pienamente coerente con gli obiettivi.
 
-Va registrata come decisione **D-18** insieme al posto dei servizi dei
-pacchetti (punti H-2 e H-3 di `hier.md`).
+Decisioni prese dopo aver letto il codice: D-18 e D-18b in
+[`decisioni.md`](decisioni.md). La descrizione qui sopra è superata in due
+punti: gli script sono 36 (circa 790 righe, in gran parte involucri), e la
+strada scelta è un pacchetto di servizi nostro, scritto in fase 2.
 
 ## 7. Il bldroot: un problema di ordine
 
@@ -264,7 +266,7 @@ Stime grossolane, in ore di lavoro, da correggere dopo lo step 5.
 | Template del sistema minimo (D1, D2, E, G) | 82 righe, 27 pacchetti | 8–12 h | Medio |
 | `llvm23` e `musl` | 59 righe, logica di bootstrap | 15–30 h | Alto (R-1) |
 | `base-files` | 41 righe | 3–5 h | Basso |
-| `dinit-chimera` | dipende da D-18 | 5 h (strada 1) – 60+ h (strada 3) | Alto |
+| Servizi di avvio nostri (D-18b) | una ventina di servizi, poche eccezioni in shell | da stimare all'inizio della fase 2; molto meno delle 60+ h ipotizzate all'inizio | Medio |
 | `/usr` nei sorgenti dei programmi | ignoto | da misurare allo step 5 | — |
 
 Fuori dal sistema minimo, i pacchetti più costosi in cports sono `samba` (116

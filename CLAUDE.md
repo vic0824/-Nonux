@@ -28,11 +28,14 @@ Se si cambia il layout, vanno aggiornati insieme `hier.md`, `hier.toml` e
 - `docs/` — specifica, decisioni, note tecniche.
 - `cports/` — submodule: fork di `chimera-linux/cports`, branch `nonux`.
   Le modifiche al sistema di build e ai pacchetti si fanno lì.
+- `services/` (da creare in fase 2) — servizi dinit di avvio, nostri. Chiamano
+  direttamente i programmi; uno script shell è ammesso solo come eccezione
+  documentata (D-18b). `dinit-chimera` non si modifica.
 - `tools/usr-inventory/` — inventario dei riferimenti a `/usr` in cports.
 - `tools/tests/` — test della specifica.
 
 Le cartelle previste dal piano e non ancora create (`tools/path-audit/`,
-`tools/shebang-fix/`, `services/`, `etc-template/`, `image/`, `ci/`) si
+`tools/shebang-fix/`, `etc-template/`, `image/`, `ci/`) si
 aggiungono quando hanno un contenuto.
 
 ## Comandi

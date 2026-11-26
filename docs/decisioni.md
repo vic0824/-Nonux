@@ -14,7 +14,7 @@ ripetute qui.
 | D-11 | libc: musl | presa |
 | D-12 | Pacchetti: apk, con l'elenco dei pacchetti in `/etc/apk/world` | presa |
 | D-18 | Servizi e default dei pacchetti in `/etc` | presa |
-| D-18b | `dinit-chimera`: spostare ora, convertire in fase 4 | proposta |
+| D-18b | Avvio: servizi nostri in fase 2, shell solo come eccezione documentata | presa |
 | D-19 | Nessuna cifratura del disco | presa |
 | D-20 | LVM e RAID software sì; zram e kdump no | presa |
 | D-21 | ext4, nessuno snapshot | presa |
@@ -166,27 +166,62 @@ C-3 vuole evitare. Riguarda 98 template con servizi e 81 con `tmpfiles` o
   lascia un file `.apk-new` da confrontare a mano: serve una regola nella
   guida di stile (fase 5).
 
-### D-18b — `dinit-chimera`: spostare ora, riscrivere in fase 4
+### D-18b — Avvio: servizi nostri, shell solo come eccezione documentata
 
-**Stato:** proposta.
+**Stato:** presa (Vittorio, 26 novembre 2026). Sostituisce la proposta
+precedente ("spostare i percorsi ora, convertire in fase 4").
 
-`dinit-chimera` contiene 37 script shell di avvio, contro A-1.
+**Contesto.** `dinit-chimera` (letto al commit `e7e37f5`) contiene 36 script
+shell per circa 790 righe, 13 programmi di supporto in C++ per circa 5300
+righe, 55 file di servizio, uno script `init` di 81 righe e uno di
+spegnimento di 34. Gli script sono di tre tipi:
 
-**Opzioni:** (1) spostare solo i percorsi; (2) tenere gli helper e riscrivere i
-servizi come file dichiarativi; (3) riscrivere l'avvio da zero.
+| Tipo | Quanti | Destino |
+|------|--------|---------|
+| Funzioni escluse (kdump, cryptsetup, zram, btrfs, ZFS, dmraid, binfmt, conteggio degli avvii) | 9 script, 213 righe | Si tolgono (D-19, D-20, D-21, D-22) |
+| Involucri che impostano l'ambiente e lanciano un programma C++ | almeno 11 | Il servizio chiama direttamente il programma |
+| Logica vera (fsck, tmpfs, machine-id, LVM, RAID, hostname, …) | una quindicina, circa 450 righe | Vedi sotto |
 
-**Decisione:** strada 1 per le fasi 1–3, strada 2 in fase 4.
+**Opzioni:** (A) tenere gli script spostando i percorsi; (B) servizi diretti,
+shell solo dove c'è logica vera; (C) zero shell, con la logica in un programma
+compilato.
 
-**Motivazione**
-- Fino alla fase 3 l'obiettivo è un sistema che si avvia e passa l'audit dei
-  percorsi: riscrivere l'avvio nello stesso momento in cui si cambia la
-  toolchain somma due rischi alti.
-- La strada 2 conserva gli helper compilati, che sono la parte difficile
-  (montaggi, fsck, cryptsetup, zram), e sostituisce solo gli script.
-- La strada 3 resta possibile dopo, con un sistema funzionante come confronto.
+**Decisione**
+1. **Opzione B, per ora.** I servizi chiamano direttamente i programmi. Uno
+   script shell è ammesso solo dove serve logica che un file di servizio non sa
+   esprimere, ed è un'eccezione documentata. L'opzione C resta un obiettivo
+   successivo.
+2. **Niente opzioni di ripristino dalla riga di comando del kernel**
+   (`fastboot`, `forcefsck`, `fsck.mode`, `fsck.repair`, `dinit_skip_volumes`).
+3. **Pacchetto nostro.** I servizi stanno nella cartella `services/` di questo
+   repository e vengono impacchettati a parte. `dinit-chimera` si compila
+   senza modifiche e se ne usano solo i programmi di supporto: non si mantiene
+   un fork dei suoi servizi.
+4. **In fase 2, non in fase 4.** La fase 2 del piano prevede già di scrivere i
+   servizi di base; adattare gli script di Chimera per poi sostituirli sarebbe
+   lavoro sprecato.
 
-**Conseguenze:** A-1 non è rispettato fino alla fine della fase 4. La stima
-della fase 4 va alzata: non è una conversione meccanica.
+**Si toglie anche** la logica di portabilità che su un sistema noto non serve:
+controlli "se il programma non è installato esci", rilevamento dei container,
+percorsi alternativi dei file di configurazione.
+
+**Conseguenze**
+- A-1 è rispettato con eccezioni elencate. L'elenco delle eccezioni va tenuto
+  in `services/` accanto agli script, ognuna con il motivo.
+- Senza le opzioni da riga di comando, per saltare o forzare un controllo del
+  filesystem bisogna avviare un altro sistema o modificare la configurazione.
+- La fase 2 si allarga e somma toolchain nuova e avvio nuovo. Mitigazione: i
+  servizi non dipendono dal layout, quindi si sviluppano e si provano su una
+  Chimera normale in macchina virtuale, in parallelo alla fase 1.
+- La fase 4 si riduce: restano rete, firewall, log, scheduler, dispositivi.
+- Il pacchetto dei servizi dipende dai programmi di `dinit-chimera`: a ogni
+  sincronizzazione va controllato che i loro argomenti non siano cambiati.
+
+**Da verificare**
+- Se lo script `init` si può eliminare facendo partire dinit direttamente dal
+  kernel.
+- Quali script di logica vera restano come eccezioni: sono stati letti per
+  intero solo `root-fsck`, `lvm`, `mdadm`, `hostname`, `fs-fstab`, `tmpfiles`.
 
 ---
 
