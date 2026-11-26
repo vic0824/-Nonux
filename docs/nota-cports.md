@@ -29,8 +29,8 @@ tools/usr-inventory/usr_inventory.py <cports> \
 - Il problema più grosso non è il prefisso ma `dinit-chimera`: script shell di
   avvio e default in `/usr/lib/*.d`, in conflitto con A-1 e C-3 (§6).
 
-**Indicazione per D-10:** i dati sono a favore di Chimera. Resta da fare la
-prova di build (step 5) prima del go definitivo.
+**Indicazione per D-10:** i dati sono a favore di Chimera, e la prova di build
+([`prova-fattibilita.md`](prova-fattibilita.md)) è riuscita su tre pacchetti.
 
 ## 2. Dove è definito il prefisso
 
@@ -140,10 +140,9 @@ I punti che contano:
 Come leggere le categorie:
 
 - **A, B** si correggono una volta sola, in cbuild.
-- **C** si riscrive con un codemod (`"usr/bin/x"` → `"bin/x"`), da applicare
-  a ogni sincronizzazione con upstream. Se cbuild esponesse le cartelle come
-  variabili, la modifica sarebbe proponibile a Chimera e il costo ricorrente
-  sparirebbe (R-8).
+- **C** non richiede modifiche ai template: nella prova di fattibilità cbuild
+  traduce da solo i percorsi `"usr/..."` relativi al destdir. Niente codemod e
+  niente costo ricorrente a ogni sincronizzazione (R-8).
 - **D1** è quasi sempre meccanica (`--libdir=/usr/lib`), ma va letta: alcuni
   argomenti indicano dove *cercare* una dipendenza, non dove installare.
 - **D2, E, G** vanno guardate una per una.
@@ -259,9 +258,9 @@ Stime grossolane, in ore di lavoro, da correggere dopo lo step 5.
 
 | Lavoro | Dimensione | Stima | Rischio |
 |--------|-----------|-------|---------|
-| Rendere parametrico cbuild (A + B) | 268 righe, 38 file | 10–15 h | Medio: va mantenuto a ogni sync |
+| Rendere parametrico cbuild (A + B) | 268 righe, 38 file | 10–15 h, di cui una prima parte già fatta | Medio: va mantenuto a ogni sync |
 | Doppio layout per la transizione (§7) | profilo + bootstrap | 10–20 h | Alto |
-| Codemod per la categoria C | 3390 righe, 859 pacchetti | 4–6 h per lo strumento | Basso |
+| Categoria C | 3390 righe, 859 pacchetti | 0 h: tradotta da cbuild (vedi prova di fattibilità) | Basso |
 | Template del sistema minimo (D1, D2, E, G) | 82 righe, 27 pacchetti | 8–12 h | Medio |
 | `llvm23` e `musl` | 59 righe, logica di bootstrap | 15–30 h | Alto (R-1) |
 | `base-files` | 41 righe | 3–5 h | Basso |
@@ -276,5 +275,5 @@ righe), `cryptsetup-scripts` (91), `gcc` (61), `initramfs-tools` (57),
 
 - Ricontrollare apk-tools e il driver di clang sulle versioni esatte
   impacchettate (3.0.11 e 23.1.6).
-- Prova di build di tre pacchetti (step 5), per misurare il `/usr` nei sorgenti.
-- Verifica del caso speciale di `GNUInstallDirs` con prefisso `/` (vedi `hier.md`).
+- Estendere la prova di build a `base-files`, `musl` e a un pacchetto con
+  servizi dinit, e provare a installare i pacchetti prodotti in una radice vuota.

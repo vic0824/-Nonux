@@ -86,9 +86,11 @@ Punti da verificare in fase 1 (prefisso `/`):
 - **autotools:** con `--prefix=/` le variabili derivate diventano `//bin`,
   `//lib`. Si evita passando sempre tutte le cartelle in modo esplicito, come
   cbuild fa già per quasi tutte.
-- **CMake:** la documentazione di `GNUInstallDirs` prevede un caso speciale per
-  il prefisso `/`, in cui alle cartelle relative viene anteposto `usr/`.
-  Da verificare; se confermato, vanno passate tutte come percorsi assoluti.
+- **CMake:** con il prefisso `/`, `GNUInstallDirs` antepone `usr/` a tutte le
+  cartelle relative. Confermato nella prova di fattibilità: vanno passate come
+  percorsi assoluti (`-DCMAKE_INSTALL_LIBDIR=/lib` ecc.).
+- **File generati:** i `.pc` e i file di configurazione CMake contengono
+  `prefix=/` e quindi percorsi come `//include`. Da normalizzare in un hook.
 - **`libexecdir=/lib`:** i pacchetti che installano direttamente in
   `$libexecdir` invece che in `$libexecdir/<pacchetto>` finiscono in `/lib`.
   È il comportamento attuale di Chimera (`/usr/lib`); `path-audit` dovrà

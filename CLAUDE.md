@@ -42,6 +42,13 @@ tools/usr-inventory/usr_inventory.py cports \
     --packages tools/usr-inventory/minimal.txt   # inventario di /usr
 ```
 
+Build di un pacchetto con il layout senza `/usr` (da utente non root, vedi
+`docs/prova-fattibilita.md`):
+
+```
+cd cports && CBUILD_TARGET_PREFIX=/ ./cbuild -r packages-nonux pkg main/<nome>
+```
+
 ## Convenzioni
 
 - Documentazione e messaggi di commit in italiano.
