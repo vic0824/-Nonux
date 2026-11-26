@@ -6,7 +6,7 @@ Ogni decisione ha uno stato:
 - **Presa** — confermata; si cambia solo con una nuova voce che la sostituisce.
 
 Le decisioni D-1…D-7 sono già prese nel piano di progetto (§3.1) e non sono
-ripetute qui. Tutte le voci sotto sono **proposte**: nessuna è ancora confermata.
+ripetute qui. Al momento è presa solo D-18; le altre voci sono proposte.
 
 Dati di riferimento: [`nota-cports.md`](nota-cports.md) e
 [`prova-fattibilita.md`](prova-fattibilita.md).
@@ -96,7 +96,8 @@ per glibc.
 
 ## D-18 — Servizi e default dei pacchetti: tutto in `/etc`
 
-**Stato:** proposta. **Data:** 26 novembre 2026. Chiude i punti H-2 e H-3.
+**Stato:** presa (confermata da Vittorio il 26 novembre 2026). Chiude i punti
+H-2 e H-3.
 
 **Problema.** Chimera installa i file forniti dai pacchetti in `/usr/lib/*.d`
 (`dinit.d`, `tmpfiles.d`, `sysusers.d`, `sysctl.d`, `modprobe.d`,
@@ -109,11 +110,19 @@ C-3 vuole evitare. Riguarda 98 template con servizi e 81 con `tmpfiles` o
 1. `/lib/*.d` per i pacchetti, `/etc/*.d` per l'amministratore (come Chimera,
    senza `/usr`).
 2. Tutto in `/etc/*.d`, una sola cartella per tipo.
+3. Tutto in `/lib/*.d`, nessuna cartella in `/etc`.
 
 **Decisione:** opzione 2.
 
 **Motivazione**
-- È l'unica coerente con C-1 e C-3, e con il criterio di accettazione della
+- L'opzione 1 è la cascata che C-3 vieta: due livelli, di cui uno prevale
+  sull'altro, e i default fuori da `/etc`.
+- L'opzione 3 non ha cascata, ma regge solo se un file di servizio non è
+  considerato configurazione. Lo è: contiene argomenti del comando,
+  dipendenze, riavvio automatico, destinazione dei log. Inoltre le modifiche
+  dell'amministratore verrebbero sovrascritte da apk a ogni aggiornamento e
+  non sarebbero coperte da git.
+- L'opzione 2 è coerente con C-1 e C-3 e con il criterio di accettazione della
   fase 4 (`ls /etc/dinit.d/` mostra tutti i servizi).
 - Un solo posto da guardare per sapere cosa parte all'avvio.
 - Il rischio dell'opzione 2, cioè perdere le proprie modifiche a un
@@ -121,8 +130,18 @@ C-3 vuole evitare. Riguarda 98 template con servizi e 81 con `tmpfiles` o
   modificati, e `/etc` è sotto git (C-4).
 
 **Conseguenze**
-- In cbuild cambiano le destinazioni di `install_service`, `install_tmpfiles`
-  e `install_sysusers`, e il lint che oggi vieta `etc/dinit.d` va ribaltato.
+- In cbuild, con il layout senza `/usr`, i percorsi `usr/lib/<cartella>` delle
+  sette cartelle elencate vengono portati in `etc/<cartella>` e il lint non le
+  rifiuta più in `/etc`. Fatto sul branch `nonux` di cports e verificato con un
+  pacchetto di prova: servizio in `/etc/dinit.d`, abilitazione in
+  `/etc/dinit.d/boot.d`, `tmpfiles`, `sysusers` e `sysctl` in `/etc`.
+- I link di abilitazione predefinita dei pacchetti finiscono in
+  `/etc/dinit.d/boot.d`, la stessa cartella in cui l'amministratore abilita i
+  servizi: disabilitare un servizio significa cancellare un file di un
+  pacchetto. Da regolare nella guida di stile (fase 5).
+- Restano fuori dalla decisione altre cartelle con lo stesso schema, che cbuild
+  oggi vuole in `/usr/lib`: `pam.d`, `udev/rules.d`, `udev/hwdb.d`, `kernel.d`.
+  Da decidere quando si portano quei pacchetti.
 - dinit, `sd-tools` e gli helper di `dinit-chimera` vanno configurati per
   leggere una sola cartella.
 - Se un pacchetto aggiorna un servizio che l'amministratore ha modificato, apk

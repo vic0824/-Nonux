@@ -20,7 +20,7 @@ in [`hier.toml`](hier.toml) e come pagina man in [`man/hier.7`](man/hier.7).
 | `/lib/<pacchetto>/` | Eseguibili interni non destinati al `PATH` (l'equivalente di `libexec`) | Decisione D-6 |
 | `/include` | Header C/C++ | |
 | `/share` | Dati indipendenti dall'architettura: man, locale, icone, font, dati dei pacchetti | |
-| `/etc` | Configurazioni | Sotto git |
+| `/etc` | Configurazioni, compresi servizi dinit e default dei pacchetti (`dinit.d`, `tmpfiles.d`, `sysusers.d`, `sysctl.d`, `modprobe.d`, `modules-load.d`, `binfmt.d`) | Sotto git. Decisione D-18 |
 | `/var` | Dati variabili persistenti: `log/`, `cache/`, `lib/` (stato dei servizi), `spool/` | |
 | `/run` | Dati runtime | tmpfs |
 | `/tmp` | File temporanei | tmpfs |
@@ -114,8 +114,8 @@ Le decisioni proposte, con motivazione, sono in [`decisioni.md`](decisioni.md).
 | # | Domanda | Proposta |
 |---|---------|----------|
 | H-1 | `/var/tmp` (temporanei che sopravvivono al riavvio) | Ammetterla: `/tmp` è tmpfs e non regge file grandi; molti programmi la usano per questo. |
-| H-2 | Servizi dinit forniti dai pacchetti (D-18) | `/lib/dinit.d` per i file dei pacchetti, `/etc/dinit.d` solo per le scelte dell'amministratore. Alternativa più fedele a C-3: tutto in `/etc/dinit.d`, gestito come file di configurazione da apk. |
-| H-3 | Default di `sysctl`, `modprobe`, `tmpfiles`, `sysusers` che Chimera mette in `/usr/lib/*.d` | Stessa scelta di H-2: è lo stesso problema della cascata "default in lib, override in etc" (C-3). |
+| H-2 | Servizi dinit forniti dai pacchetti | **Chiuso (D-18):** tutto in `/etc/dinit.d`. |
+| H-3 | Default di `sysctl`, `modprobe`, `tmpfiles`, `sysusers` che Chimera mette in `/usr/lib/*.d` | **Chiuso (D-18):** tutto in `/etc/<cartella>`. |
 | H-4 | Sysroot dei cross-compilatori (`/usr/<tripletta>` in cports) | `/lib/cross/<tripletta>`; esiste solo sulle macchine di build. |
 | H-5 | Home degli utenti di servizio | `/var/lib/<servizio>`. |
 | H-6 | Licenze dei pacchetti | `/share/licenses/<pacchetto>`, come in Chimera senza `/usr`. |

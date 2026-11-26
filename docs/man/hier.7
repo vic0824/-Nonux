@@ -59,6 +59,23 @@ indipendenti dall'architettura.
 Configurazioni, un file o una cartella per servizio.
 La cartella è un repository
 .Xr git 1 .
+.Bl -tag -width "firmware/" -compact
+.It Pa dinit.d/
+Servizi, sia dei pacchetti sia dell'amministratore.
+.El
+.Pp
+Non esistono cartelle di valori predefiniti in
+.Pa /lib :
+anche i file
+.Pa tmpfiles.d ,
+.Pa sysusers.d ,
+.Pa sysctl.d ,
+.Pa modprobe.d ,
+.Pa modules-load.d
+e
+.Pa binfmt.d
+dei pacchetti stanno in
+.Pa /etc .
 .It Pa /var
 Dati variabili persistenti.
 .Bl -tag -width "firmware/" -compact

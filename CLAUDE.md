@@ -11,6 +11,9 @@ La specifica normativa è `docs/hier.md` (forma leggibile dagli strumenti:
 - Prefisso di installazione `/`. Eseguibili in `/bin`, librerie in `/lib`,
   header in `/include`, dati in `/share`, configurazioni in `/etc`.
 - Eseguibili interni di un pacchetto in `/lib/<pacchetto>/`.
+- Servizi dinit e default dei pacchetti (`tmpfiles.d`, `sysusers.d`,
+  `sysctl.d`, `modprobe.d`, `modules-load.d`, `binfmt.d`) solo in `/etc`: mai
+  una cartella di default in `/lib` con override in `/etc` (D-18).
 - Vietati: `/usr`, `/usr/local`, `/sbin`, `/lib64`, `/lib32`, `/libexec`,
   `/opt`, `/media`, `/srv`, `/var/run`, `/var/lock`.
 - **Mai aggiungere symlink di compatibilità** verso i percorsi vietati, nemmeno
