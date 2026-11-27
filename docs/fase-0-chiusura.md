@@ -51,7 +51,7 @@ Rispetto al piano originale, per effetto delle decisioni prese:
 | Fase | Cambiamento |
 |------|-------------|
 | 1 — Toolchain | Si aggiunge la transizione a stadi dell'ambiente di build. Si decide H-7. Il lavoro su cbuild è già avviato. |
-| 2 — Sistema minimo | Niente initramfs (D-22): kernel con driver della radice e microcodice inclusi. Si scrivono qui i servizi di avvio nostri (D-18b), con LVM e RAID (D-20). |
+| 2 — Sistema minimo | Niente initramfs (D-22): configurazione del kernel nostra, con i driver di archiviazione comuni ed ext4 inclusi; microcodice da archivio separato, da verificare con D-16. Si scrivono qui i servizi di avvio nostri (D-18b), con LVM e RAID (D-20). |
 | 3 — Audit dei percorsi | I percorsi letterali nei template non vanno corretti. L'audit deve distinguere tre casi emersi dalla prova: `/usr` funzionale nei sorgenti, residui dell'ambiente di build nei simboli di debug, citazioni in documentazione e commenti. Va aggiunta la normalizzazione di `//` nei file `.pc` e CMake. |
 | 4 — Stack di amministrazione | Più piccola: i servizi di avvio sono già fatti. Restano rete, firewall, log, scheduler, dispositivi, generazione della UKI senza initramfs. |
 | 5 — Convenzioni di configurazione | Si aggiungono due regole: cosa fare dei file `.apk-new` e come si disabilita un servizio abilitato da un pacchetto (D-18). L'elenco dei pacchetti è `/etc/apk/world` sotto git (D-12). |
@@ -65,7 +65,7 @@ grossolane quanto quelle originali.
 | Fase | Piano originale | Rivista | Motivo |
 |------|-----------------|---------|--------|
 | 1 — Toolchain | 3–6 | 4–7 | Transizione a stadi |
-| 2 — Sistema minimo | 3–4 | 4–6 | Servizi di avvio, kernel su misura |
+| 2 — Sistema minimo | 3–4 | 4–6 | Servizi di avvio, configurazione del kernel nostra |
 | 3 — Audit dei percorsi | 3–5 | 2–4 | Niente correzioni ai template |
 | 4 — Stack di amministrazione | 4–6 | 3–4 | Servizi di avvio già fatti |
 | 5 — Convenzioni di configurazione | 1–2 | 1–2 | — |
