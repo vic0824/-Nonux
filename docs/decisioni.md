@@ -311,12 +311,23 @@ e quello di Chimera è fatto di script shell (`initramfs-tools`, 57 righe con
 generatore e un passaggio dell'avvio.
 
 **Conseguenze**
-- I driver del disco e del filesystem della radice vanno compilati dentro il
-  kernel, non come moduli: serve un kernel configurato per la macchina.
-- Il microcodice della CPU va incluso nel kernel, che va ricompilato a ogni
-  aggiornamento del microcodice.
-- La UKI (D-16) contiene solo kernel e riga di comando, con la radice indicata
-  per `PARTUUID`.
+- Serve una configurazione del kernel nostra, diversa da quella di Chimera: i
+  driver di archiviazione e ext4 vanno compilati dentro il kernel, non come
+  moduli. Si includono i driver comuni (NVMe, SATA/AHCI, virtio, archiviazione
+  USB), non solo quelli di una macchina: lo stesso kernel serve la macchina
+  virtuale e l'hardware reale, e cambiare disco non richiede di ricompilarlo.
+- I driver di LVM e RAID possono restare moduli: servono solo dopo il montaggio
+  della radice.
+- Microcodice della CPU: da caricare da un archivio separato che contiene solo
+  il file del microcodice, senza script né programmi, così un aggiornamento non
+  richiede di ricompilare il kernel. Il kernel lo riceve come initrd, ma è un
+  file di dati e non l'initramfs che questa decisione elimina. **Da
+  verificare** insieme a D-16; il ripiego è includere il microcodice nel
+  kernel e ricompilarlo a ogni aggiornamento.
+- I percorsi predefiniti del kernel verso `/sbin` (`modprobe`, spegnimento) si
+  fissano nella stessa configurazione o via `sysctl` (vedi `hier.md`).
+- La UKI (D-16) contiene kernel e riga di comando, con la radice indicata per
+  `PARTUUID`, più l'eventuale archivio del microcodice.
 - La radice non può essere ridimensionata con LVM né avere ridondanza RAID.
 - `/var` su un volume separato deve essere montata presto: i servizi che
   scrivono log o stato dipendono dal suo mount.
