@@ -13,6 +13,7 @@ ripetute qui.
 | D-10 | Base: Chimera | presa |
 | D-11 | libc: musl | presa |
 | D-12 | Pacchetti: apk, con l'elenco dei pacchetti in `/etc/apk/world` | presa |
+| D-16 | Avvio: UKI e microcodice | rinviata alla fase 4 |
 | D-18 | Servizi e default dei pacchetti in `/etc` | presa |
 | D-18b | Avvio: servizi nostri in fase 2, shell solo come eccezione documentata | presa |
 | D-19 | Nessuna cifratura del disco | presa |
@@ -111,6 +112,27 @@ far riallineare il sistema.
 
 **Da ricontrollare:** l'analisi è sulla versione 3.0.8; cports impacchetta la
 3.0.11.
+
+---
+
+## D-16 — Avvio: UKI e microcodice
+
+**Stato:** rinviata alla fase 4, quando si scrive la generazione della UKI.
+
+**Già fissato da D-22:** la UKI contiene il kernel e la riga di comando, con la
+radice indicata per `PARTUUID`. Non contiene un initramfs.
+
+**Da decidere: come si carica il microcodice della CPU.**
+- (a) Un archivio separato che contiene solo il file del microcodice, senza
+  script né programmi, che il kernel riceve come initrd e che la UKI include.
+  Un aggiornamento del microcodice non richiede di ricompilare il kernel.
+- (b) Il microcodice incluso nel kernel, da ricompilare a ogni aggiornamento.
+- (c) Non caricarlo e affidarsi al firmware della scheda madre.
+
+La preferita è (a). Dipende da come si avvia il kernel e si può verificare solo
+su hardware reale, perché in macchina virtuale il microcodice non si carica.
+Per non chiudere questa strada, il kernel di fase 2 tiene attivo
+`CONFIG_BLK_DEV_INITRD` (D-22).
 
 ---
 
@@ -260,8 +282,9 @@ zram né kdump.
 **Conseguenze**
 - Entrano nel sistema `lvm2` e `mdadm` con i loro servizi di avvio. `lvm2` è
   tra i pacchetti più costosi dell'inventario (51 righe con `usr`).
-- I servizi di avvio corrispondenti di `dinit-chimera` restano e vanno
-  convertiti in fase 4 (D-18b); quelli per cryptsetup, zram e kdump si tolgono.
+- I servizi di avvio per LVM e RAID si riscrivono come servizi nostri in
+  fase 2 (D-18b); quelli di `dinit-chimera` per cryptsetup, zram e kdump si
+  tolgono.
 - Lo swap, se serve, è una partizione o un volume normale.
 - LVM e RAID si usano per `/home`, `/var` e i dati, non per la radice: vedi D-22.
 
@@ -331,7 +354,7 @@ generatore e un passaggio dell'avvio.
 - Non c'è una shell di emergenza: se la radice non si monta il kernel si ferma
   e per riparare serve un supporto di avvio esterno.
 - L'ibernazione funziona solo con una partizione di swap semplice: il kernel
-  da solo non riprende da uno swap su volume LVM.
+  da solo non riprende da uno swap su volume LVM o su RAID software.
 - I percorsi predefiniti del kernel verso `/sbin` (`modprobe`, spegnimento) si
   fissano nella stessa configurazione o via `sysctl` (vedi `hier.md`).
 - La UKI (D-16) contiene kernel e riga di comando, con la radice indicata per
@@ -343,7 +366,7 @@ generatore e un passaggio dell'avvio.
   non si usano.
 
 **Quando rivederla:** se serve la radice cifrata o ridondante, oppure
-l'ibernazione con lo swap su LVM. Un'alternativa da valutare in quel caso è un
+l'ibernazione con lo swap su LVM o RAID. Un'alternativa da valutare in quel caso è un
 initramfs minimo nostro, con un solo programma e senza shell.
 
 ---
