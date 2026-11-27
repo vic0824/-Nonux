@@ -318,23 +318,33 @@ generatore e un passaggio dell'avvio.
   virtuale e l'hardware reale, e cambiare disco non richiede di ricompilarlo.
 - I driver di LVM e RAID possono restare moduli: servono solo dopo il montaggio
   della radice.
-- Microcodice della CPU: da caricare da un archivio separato che contiene solo
-  il file del microcodice, senza script né programmi, così un aggiornamento non
-  richiede di ricompilare il kernel. Il kernel lo riceve come initrd, ma è un
-  file di dati e non l'initramfs che questa decisione elimina. **Da
-  verificare** insieme a D-16; il ripiego è includere il microcodice nel
-  kernel e ricompilarlo a ogni aggiornamento.
+- **Microcodice della CPU: scelta rinviata a D-16 (fase 4).** Le strade sono
+  tre: (a) un archivio separato che contiene solo il file del microcodice,
+  senza script né programmi, che il kernel riceve come initrd; (b) il
+  microcodice incluso nel kernel, da ricompilare a ogni aggiornamento; (c) non
+  caricarlo e affidarsi al firmware della scheda madre. La preferita è (a), ma
+  dipende da come si avvia il kernel e si può verificare solo su hardware
+  reale: in macchina virtuale il microcodice non si carica.
+- **Vincolo per la fase 2:** la configurazione del kernel tiene attivo il
+  supporto agli archivi caricati all'avvio (`CONFIG_BLK_DEV_INITRD`), anche se
+  non esiste un initramfs, per non chiudere la strada (a).
+- Non c'è una shell di emergenza: se la radice non si monta il kernel si ferma
+  e per riparare serve un supporto di avvio esterno.
+- L'ibernazione funziona solo con una partizione di swap semplice: il kernel
+  da solo non riprende da uno swap su volume LVM.
 - I percorsi predefiniti del kernel verso `/sbin` (`modprobe`, spegnimento) si
   fissano nella stessa configurazione o via `sysctl` (vedi `hier.md`).
 - La UKI (D-16) contiene kernel e riga di comando, con la radice indicata per
-  `PARTUUID`, più l'eventuale archivio del microcodice.
+  `PARTUUID`, più l'eventuale archivio del microcodice (strada a).
 - La radice non può essere ridimensionata con LVM né avere ridondanza RAID.
 - `/var` su un volume separato deve essere montata presto: i servizi che
   scrivono log o stato dipendono dal suo mount.
 - I pacchetti `initramfs-tools` e gli hook `install_initramfs` dei template
   non si usano.
 
-**Quando rivederla:** se serve la radice cifrata o ridondante.
+**Quando rivederla:** se serve la radice cifrata o ridondante, oppure
+l'ibernazione con lo swap su LVM. Un'alternativa da valutare in quel caso è un
+initramfs minimo nostro, con un solo programma e senza shell.
 
 ---
 
